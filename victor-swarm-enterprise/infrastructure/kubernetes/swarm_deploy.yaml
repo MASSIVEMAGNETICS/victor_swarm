@@ -1,0 +1,17 @@
+# swarm_deploy.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: victor-swarm
+spec:
+  replicas: 100
+  template:
+    metadata:
+      labels:
+        app: victor-agent
+    spec:
+      containers:
+      - name: victor-agent
+        image: your-victor-agent-image
+        ports:
+        - containerPort: 8000

@@ -1,0 +1,19 @@
+# docker-compose.yaml
+version: '3'
+services:
+  overlord:
+    build: ./overlord_node
+    ports:
+      - "8000:8000"
+  prospector:
+    build: ./agents/prospector
+  closer:
+    build: ./agents/closer
+  fulfillment:
+    build: ./agents/fulfillment
+  client_success:
+    build: ./agents/client_success
+  marketing:
+    build: ./agents/marketing
+  profit_loop:
+    build: ./agents/profit_loop
