@@ -13,6 +13,7 @@ def parse_arguments():
     parser = argparse.ArgumentParser(description="Victor AGI application.")
     parser.add_argument("--debug", action="store_true", help="Enable debug mode.")
     parser.add_argument("--multithreading", action="store_true", help="Enable multithreading.")
+    parser.add_argument("--headless", action="store_true", help="Run in headless mode (no GUI).")
     # Add more arguments as needed
     return parser.parse_args()
 
