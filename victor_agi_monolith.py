@@ -1,5 +1,6 @@
 import sys, os, threading, traceback, json, time, copy, uuid, math, hashlib, random, pickle, re, collections
 import numpy as np
+from typing import Optional, List, Dict, Any, Union, Callable, Tuple
 
 # --- Conditional GUI Imports & Global Flags ---
 # These are placed early to determine tk_available before VictorGUI class definition.
@@ -55,16 +56,47 @@ def victor_log(level, message):
 def generate_id(prefix="vid_"):
     return prefix + str(uuid.uuid4().hex)
 
+def hash_data(data_to_hash: Any) -> str:
+    """
+    Creates a SHA-256 hash of the provided data.
+
+    Args:
+        data_to_hash: The data to be hashed.
+
+    Returns:
+        The SHA-256 hex digest string.
+    """
+    try:
+        return hashlib.sha256(str(data_to_hash).encode('utf-8')).hexdigest()
+    except Exception as e:
+        victor_log("WARNING", f"hash_data failed: {e}")
+        return "dummy_hash_error"
 
 # =============================================================
 # 1. GENESIS SUBSTRATE: The Light & LightHive
 # =============================================================
-class TheLight:
-    STATES = ['fluid', 'particle', 'wave', 'gas', 'solid', 'plasma', 'field', 'unknown']
 
-    def __init__(self, quantization=1.0, state='field', dimensions=3, radius=1.0, entropy=0.01, temperature=0.5):
-        self.quantization = quantization
-        self.state = state if state in self.STATES else 'field'
+class TheLight:
+    """
+    Genesis Substrate component representing the fundamental core of AGI intelligence.
+    """
+    STATES: List[str] = ['fluid', 'particle', 'wave', 'gas', 'solid', 'plasma', 'field', 'unknown']
+
+    def __init__(self, quantization: float = 1.0, state: str = 'field', dimensions: int = 3,
+                 radius: float = 1.0, entropy: float = 0.01, temperature: float = 0.5):
+        """
+        Initializes TheLight.
+
+        Args:
+            quantization: Resolution level of the light points.
+            state: Physical representation state.
+            dimensions: Spatial dimensions (usually 3).
+            radius: Size of the light representation.
+            entropy: Chaos/randomness factor in points.
+            temperature: Activity/excitation level.
+        """
+        self.quantization: float = quantization
+        self.state: str = state if state in self.STATES else 'field'
         self.dimensions = dimensions
         self.radius = radius
         self.entropy = entropy
@@ -198,10 +230,20 @@ class TheLight:
                 f"entropy={self.entropy:.2f}, temp={self.temperature:.2f})>")
 
 class LightHive:
-    def __init__(self, nodes=None):
-        self.nodes = nodes if nodes else []
+    """
+    Manager for multiple instances of TheLight to form a synchronized neural swarm.
+    """
+    def __init__(self, nodes: Optional[List[TheLight]] = None):
+        """
+        Initializes the LightHive.
 
-    def add_node(self, node):
+        Args:
+            nodes: Optional list of TheLight instances to manage.
+        """
+        self.nodes: List[TheLight] = nodes if nodes else []
+
+    def add_node(self, node: TheLight) -> None:
+        """Adds a TheLight node to the hive."""
         if isinstance(node, TheLight): self.nodes.append(node)
 
     def global_coherence(self):
@@ -302,10 +344,19 @@ class FractalMeshStack:
 # 3. FRACTAL STATE ENGINE & TIMELINE MANAGER
 # =============================================================
 class FractalState:
-    def __init__(self, agi_config=None):
-        self.config = agi_config if agi_config else VICTOR_CONFIG
-        self._state = self._get_initial_state()
-        self.timelines = {"genesis": collections.deque(maxlen=self.config.get("max_history_per_timeline", 1000))}
+    """
+    State Engine managing variables, execution history, timelines, and memory replay.
+    """
+    def __init__(self, agi_config: Optional[Dict[str, Any]] = None):
+        """
+        Initializes the FractalState engine.
+
+        Args:
+            agi_config: Optional configuration dictionary.
+        """
+        self.config: Dict[str, Any] = agi_config if agi_config else VICTOR_CONFIG
+        self._state: Dict[str, Any] = self._get_initial_state()
+        self.timelines: Dict[str, collections.deque] = {"genesis": collections.deque(maxlen=self.config.get("max_history_per_timeline", 1000))}
         self.current_timeline = "genesis"
         self.history = self.timelines[self.current_timeline]
         self.save_state("Genesis: Initial state created.", initial_setup=True)
@@ -459,13 +510,23 @@ class GodTierCortex:
 
 # Actual class definition comes first
 class VictorAGIMonolith:
-    def __init__(self, config_overrides=None, start_gui=True):
-        current_effective_config = copy.deepcopy(VICTOR_CONFIG) # Work with a copy
+    """
+    The main Victor AGI Monolith class tying together State, Cortex, Substrates, and Replication.
+    """
+    def __init__(self, config_overrides: Optional[Dict[str, Any]] = None, start_gui: bool = True):
+        """
+        Initializes the Victor AGI Monolith.
+
+        Args:
+            config_overrides: Optional configuration overrides.
+            start_gui: Whether to start the GUI.
+        """
+        current_effective_config: Dict[str, Any] = copy.deepcopy(VICTOR_CONFIG) # Work with a copy
         if config_overrides:
             current_effective_config.update(config_overrides)
-        self.config = current_effective_config # Instance-specific config
+        self.config: Dict[str, Any] = current_effective_config # Instance-specific config
 
-        self.instance_id = generate_id("victor_agi_")
+        self.instance_id: str = generate_id("victor_agi_")
         self.replicas, self.has_gui = [], False
         self.rootlaw = BloodlineRootLaw()
         self.state = FractalState(agi_config=self.config) # FractalState will deepcopy this
@@ -653,17 +714,3 @@ if __name__ == "__main__":
         finally:
             if hasattr(main_agi, 'monitor_stop_event') and not main_agi.monitor_stop_event.is_set(): main_agi.shutdown()
     victor_log("INFO", "Victor AGI Monolith bootloader sequence complete.")
-
-# Note: hash_data function is called in GodTierCortex but not defined in this provided code.
-# This will cause a NameError if that part of the code is executed.
-# For the purpose of this subtask (replacing content), I am including the code as-is.
-# If the definition of hash_data is available, it should be added.
-# For now, I'll add a dummy one to prevent immediate runtime error if that code path is hit.
-
-def hash_data(data_to_hash):
-    """Placeholder for a proper hashing function."""
-    try:
-        return hashlib.sha256(str(data_to_hash).encode('utf-8')).hexdigest()
-    except Exception as e:
-        victor_log("WARNING", f"hash_data placeholder failed: {e}")
-        return "dummy_hash_error"
